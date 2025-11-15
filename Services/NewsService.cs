@@ -6,7 +6,7 @@ using PocApp.Models;
 
 namespace PocApp.Services;
 
-public sealed class MovieService
+public sealed class NewsService
 {
     private readonly HttpClient _httpClient;
 
@@ -15,19 +15,19 @@ public sealed class MovieService
         PropertyNameCaseInsensitive = true
     };
 
-    public MovieService(HttpClient httpClient)
+    public NewsService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
-    public async Task<IReadOnlyList<Movie>> GetMoviesAsync()
+    public async Task<IReadOnlyList<NewsItem>> GetNewsAsync()
     {
-        var response = await _httpClient.GetAsync("/api/default/movies");
+        var response = await _httpClient.GetAsync("/api/default/newsitems");
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync();
-        var data = await JsonSerializer.DeserializeAsync<MoviesResponse>(stream, _jsonOptions);
+        var data = await JsonSerializer.DeserializeAsync<NewsResponse>(stream, _jsonOptions);
 
-        return data?.Value ?? System.Array.Empty<Movie>();
+        return data?.Value ?? System.Array.Empty<NewsItem>();
     }
 }

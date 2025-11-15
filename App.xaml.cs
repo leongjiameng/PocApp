@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace PocApp;
+﻿namespace PocApp;
 
 public partial class App : Application
 {
