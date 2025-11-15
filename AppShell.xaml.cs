@@ -8,6 +8,6 @@ public partial class AppShell : Shell
 
 		Routing.RegisterRoute(nameof(MoviesPage), typeof(MoviesPage));
 		Routing.RegisterRoute(nameof(NewsPage), typeof(NewsPage));
-		// NewsDetailPage is pushed via constructor; route not required.
+		Routing.RegisterRoute(nameof(NewsDetailPage), typeof(NewsDetailPage));
 	}
 }

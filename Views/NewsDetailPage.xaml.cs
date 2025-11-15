@@ -1,28 +1,65 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using PocApp.Models;
+using PocApp.Services;
 
 namespace PocApp;
 
+[QueryProperty(nameof(NewsId), "id")]
 public partial class NewsDetailPage : ContentPage
 {
-    private readonly NewsItem _newsItem;
+    private readonly NewsService _newsService;
 
-    public NewsDetailPage(NewsItem item)
+    public string? NewsId { get; set; }
+
+    public NewsDetailPage()
     {
         InitializeComponent();
-        _newsItem = item;
+        _newsService = MauiProgram.Services.GetRequiredService<NewsService>();
+    }
 
-        TitleLabel.Text = _newsItem.Title ?? "(No title)";
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
 
-        if (_newsItem.PublicationDate != default)
+        if (string.IsNullOrWhiteSpace(NewsId))
         {
-            DateLabel.Text = $"Published: {_newsItem.PublicationDate:yyyy-MM-dd}";
+            await DisplayAlertAsync("Error", "No news id provided.", "OK");
+            return;
+        }
+
+        if (!Guid.TryParse(NewsId, out var id))
+        {
+            await DisplayAlertAsync("Error", "Invalid news id.", "OK");
+            return;
+        }
+
+        await LoadNewsDetailAsync(id);
+    }
+
+    private async Task LoadNewsDetailAsync(Guid id)
+    {
+        var item = await _newsService.GetNewsByIdAsync(id);
+
+        if (item == null)
+        {
+            await DisplayAlertAsync("Error", "News item not found.", "OK");
+            return;
+        }
+
+        TitleLabel.Text = item.Title ?? "(No title)";
+
+        if (item.PublicationDate != default)
+        {
+            DateLabel.Text = $"Published: {item.PublicationDate:yyyy-MM-dd}";
         }
         else
         {
             DateLabel.Text = string.Empty;
         }
 
-        var htmlContent = _newsItem.Content ?? _newsItem.Summary ?? string.Empty;
+        var htmlContent = item.Content ?? item.Summary ?? string.Empty;
 
         var html = $@"
 <!DOCTYPE html>
@@ -51,11 +88,9 @@ public partial class NewsDetailPage : ContentPage
 </body>
 </html>";
 
-        var source = new HtmlWebViewSource
+        ContentWebView.Source = new HtmlWebViewSource
         {
             Html = html
         };
-
-        ContentWebView.Source = source;
     }
 }

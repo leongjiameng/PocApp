@@ -5,7 +5,7 @@
              Title="News">
 
     <Grid Padding="16"
-            RowDefinitions="Auto,*,Auto">
+          RowDefinitions="Auto,*,Auto">
 
         <Label
             x:Name="StatusLabel"
@@ -14,32 +14,40 @@
             HorizontalOptions="Center"
             Margin="0,0,0,8"/>
 
-        <CollectionView
-            x:Name="NewsCollectionView"
+        <RefreshView
+            x:Name="NewsRefreshView"
             Grid.Row="1"
-            SelectionMode="Single"
-            SelectionChanged="OnNewsSelectionChanged">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,4"
-                           Padding="10"
-                           HasShadow="False">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding Title}"
-                                   FontAttributes="Bold"
-                                   FontSize="16"/>
+            Refreshing="OnRefreshRequested">
 
-                            <Label Text="{Binding PublicationDate, StringFormat='Published: {0:yyyy-MM-dd}'}"
-                                   FontSize="12"/>
+            <CollectionView
+                x:Name="NewsCollectionView"
+                SelectionMode="Single"
+                SelectionChanged="OnNewsSelectionChanged"
+                RemainingItemsThreshold="3"
+                RemainingItemsThresholdReached="OnRemainingItemsThresholdReached">
 
-                            <Label Text="{Binding Summary}"
-                                   FontSize="13"
-                                   LineBreakMode="WordWrap"/>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4"
+                                Padding="10">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Title}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"/>
+
+                                <Label Text="{Binding PublicationDate, StringFormat='Published: {0:yyyy-MM-dd}'}"
+                                       FontSize="12"/>
+
+                                <Label Text="{Binding Summary}"
+                                       FontSize="13"
+                                       LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </RefreshView>
 
         <ActivityIndicator
             x:Name="LoadingIndicator"

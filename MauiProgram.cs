@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PocApp.Services;
 
 namespace PocApp;
@@ -19,7 +21,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		// Typed HttpClients for our services
+		// Typed HttpClients
 		builder.Services.AddHttpClient<MovieService>(client =>
 		{
 			client.BaseAddress = new Uri(ApiConfig.BaseUrl);

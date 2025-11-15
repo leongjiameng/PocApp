@@ -20,14 +20,20 @@ public sealed class MovieService
         _httpClient = httpClient;
     }
 
-    public async Task<IReadOnlyList<Movie>> GetMoviesAsync()
+    /// <summary>
+    /// Get a page of movies using Sitefinity OData paging ($skip / $top).
+    /// </summary>
+    public async Task<IReadOnlyList<Movie>> GetMoviesPageAsync(int skip, int take)
     {
-        var response = await _httpClient.GetAsync("/api/default/movies");
+        // IMPORTANT: always order when paging
+        var url = $"/api/default/movies?$orderby=PublicationDate desc&$skip={skip}&$top={take}";
+
+        var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync();
         var data = await JsonSerializer.DeserializeAsync<MoviesResponse>(stream, _jsonOptions);
 
-        return data?.Value ?? System.Array.Empty<Movie>();
+        return data?.Value ?? new List<Movie>();
     }
 }
